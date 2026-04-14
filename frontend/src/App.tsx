@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProductListPage } from "@/pages/product-list";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -9,15 +10,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-function ProductListPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold">Products</h1>
-      <p className="text-muted-foreground mt-2">Browse our product catalog</p>
-    </div>
-  );
-}
 
 function ProductDetailPage() {
   return (

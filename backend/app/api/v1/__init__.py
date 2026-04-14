@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 
+from app.api.v1.categories import router as categories_router
+from app.api.v1.products import router as products_router
+
 api_router = APIRouter()
 
-# Routers will be registered here as user stories are implemented.
-# Example:
-#   from app.api.v1.products import router as products_router
-#   api_router.include_router(products_router, prefix="/products", tags=["products"])
+api_router.include_router(categories_router, prefix="/categories", tags=["categories"])
+api_router.include_router(products_router, prefix="/products", tags=["products"])

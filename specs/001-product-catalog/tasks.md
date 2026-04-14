@@ -67,18 +67,18 @@
 
 ### Implementation for User Story 1
 
-- [ ] T027 [P] [US1] Create Category Pydantic schemas (CategoryTree with nested children and product_count) in `backend/app/schemas/category.py`
-- [ ] T028 [P] [US1] Create Product list Pydantic schemas (ProductListItem with id, name, slug, base_price, primary_image, average_rating, review_count, has_stock; ProductListResponse with cursor pagination) in `backend/app/schemas/product.py`
-- [ ] T029 [US1] Implement CategoryService with get_category_tree() using recursive CTE, computing product_count for active non-deleted products in `backend/app/services/category_service.py`
-- [ ] T030 [US1] Implement ProductService.list_products() with category_id filter, cursor-based pagination (default page_size=20), and default sort by newest in `backend/app/services/product_service.py`
-- [ ] T031 [P] [US1] Create GET `/api/v1/categories` endpoint returning nested category tree in `backend/app/api/v1/categories.py`
-- [ ] T032 [P] [US1] Create GET `/api/v1/products` endpoint with category_id query param and cursor pagination in `backend/app/api/v1/products.py`
-- [ ] T033 [US1] Register categories and products routers on the API v1 router in `backend/app/api/v1/__init__.py`
-- [ ] T034 [P] [US1] Create CategoryNav component displaying hierarchical category list with product counts and active state highlighting in `frontend/src/components/category-nav.tsx`
-- [ ] T035 [P] [US1] Create ProductCard component showing product thumbnail, name, price, rating, and stock badge in `frontend/src/components/product-card.tsx`
-- [ ] T036 [US1] Create useCategories TanStack Query hook (GET /api/v1/categories with staleTime for caching) in `frontend/src/hooks/use-categories.ts`
-- [ ] T037 [US1] Create useProducts TanStack Query hook (GET /api/v1/products with category_id, pagination via useInfiniteQuery) in `frontend/src/hooks/use-products.ts`
-- [ ] T038 [US1] Create ProductListPage with CategoryNav sidebar, product grid, empty state, and URL sync (category query param) in `frontend/src/pages/product-list.tsx`
+- [x] T027 [P] [US1] Create Category Pydantic schemas (CategoryTree with nested children and product_count) in `backend/app/schemas/category.py`
+- [x] T028 [P] [US1] Create Product list Pydantic schemas (ProductListItem with id, name, slug, base_price, primary_image, average_rating, review_count, has_stock; ProductListResponse with cursor pagination) in `backend/app/schemas/product.py`
+- [x] T029 [US1] Implement CategoryService with get_category_tree() using recursive CTE, computing product_count for active non-deleted products in `backend/app/services/category_service.py`
+- [x] T030 [US1] Implement ProductService.list_products() with category_id filter, cursor-based pagination (default page_size=20), and default sort by newest in `backend/app/services/product_service.py`
+- [x] T031 [P] [US1] Create GET `/api/v1/categories` endpoint returning nested category tree in `backend/app/api/v1/categories.py`
+- [x] T032 [P] [US1] Create GET `/api/v1/products` endpoint with category_id query param and cursor pagination in `backend/app/api/v1/products.py`
+- [x] T033 [US1] Register categories and products routers on the API v1 router in `backend/app/api/v1/__init__.py`
+- [x] T034 [P] [US1] Create CategoryNav component displaying hierarchical category list with product counts and active state highlighting in `frontend/src/components/category-nav.tsx`
+- [x] T035 [P] [US1] Create ProductCard component showing product thumbnail, name, price, rating, and stock badge in `frontend/src/components/product-card.tsx`
+- [x] T036 [US1] Create useCategories TanStack Query hook (GET /api/v1/categories with staleTime for caching) in `frontend/src/hooks/use-categories.ts`
+- [x] T037 [US1] Create useProducts TanStack Query hook (GET /api/v1/products with category_id, pagination via useInfiniteQuery) in `frontend/src/hooks/use-products.ts`
+- [x] T038 [US1] Create ProductListPage with CategoryNav sidebar, product grid, empty state, and URL sync (category query param) in `frontend/src/pages/product-list.tsx`
 
 **Checkpoint**: Shoppers can browse products by category. Category navigation works, products display in a grid, URLs are bookmarkable. This is the MVP.
 
