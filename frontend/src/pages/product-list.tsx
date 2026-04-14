@@ -1,16 +1,57 @@
+import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { PackageSearch, SearchX, Loader2 } from "lucide-react";
+import { PackageSearch, SearchX, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CategoryNav } from "@/components/category-nav";
 import { ProductCard } from "@/components/product-card";
+import { FilterSidebar, type FilterValues } from "@/components/filter-sidebar";
+import { SortSelect } from "@/components/sort-select";
 import { useCategories } from "@/hooks/use-categories";
 import { useProducts } from "@/hooks/use-products";
+import { formatPrice } from "@/lib/utils";
+import type { SortOption } from "@/lib/types";
+
+/**
+ * Parse filter/sort state from URL search params.
+ * All monetary values are stored in cents in the URL (matching the API).
+ */
+function parseFiltersFromParams(params: URLSearchParams): FilterValues {
+  const minPrice = params.get("min_price");
+  const maxPrice = params.get("max_price");
+  const minRating = params.get("min_rating");
+  const inStock = params.get("in_stock");
+
+  return {
+    minPrice: minPrice ? parseInt(minPrice, 10) : null,
+    maxPrice: maxPrice ? parseInt(maxPrice, 10) : null,
+    minRating: minRating ? parseInt(minRating, 10) : null,
+    inStock: inStock === "true" ? true : null,
+  };
+}
+
+function parseSortFromParams(params: URLSearchParams): SortOption {
+  const sort = params.get("sort");
+  if (
+    sort === "price_asc" ||
+    sort === "price_desc" ||
+    sort === "newest" ||
+    sort === "popular"
+  ) {
+    return sort;
+  }
+  return "newest";
+}
 
 export function ProductListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryId = searchParams.get("category") ?? null;
   const searchQuery = searchParams.get("q") ?? null;
+
+  // Parse filter and sort state from URL
+  const filters = parseFiltersFromParams(searchParams);
+  const sort = parseSortFromParams(searchParams);
 
   // Fetch categories for the sidebar
   const {
@@ -18,32 +59,108 @@ export function ProductListPage() {
     isLoading: isCategoriesLoading,
   } = useCategories();
 
-  // Fetch products with optional category filter and search query
+  // Fetch products with all params synced from URL
   const {
     data: productsData,
     isLoading: isProductsLoading,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useProducts({ categoryId, q: searchQuery });
+  } = useProducts({
+    categoryId,
+    q: searchQuery,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    minRating: filters.minRating,
+    inStock: filters.inStock,
+    sort,
+  });
 
   // Flatten pages into a single product list
   const products = productsData?.pages.flatMap((page) => page.items) ?? [];
 
+  // --- URL State Handlers (no page reload, replaces URL params) ---
+
   function handleSelectCategory(id: string | null) {
+    const next = new URLSearchParams(searchParams);
     if (id === null) {
-      searchParams.delete("category");
+      next.delete("category");
     } else {
-      searchParams.set("category", id);
+      next.set("category", id);
     }
     // Clear search when changing category
-    searchParams.delete("q");
-    setSearchParams(searchParams, { replace: true });
+    next.delete("q");
+    setSearchParams(next, { replace: true });
   }
 
   function handleClearSearch() {
-    searchParams.delete("q");
-    setSearchParams(searchParams, { replace: true });
+    const next = new URLSearchParams(searchParams);
+    next.delete("q");
+    setSearchParams(next, { replace: true });
+  }
+
+  const handleFiltersChange = useCallback(
+    (newFilters: FilterValues) => {
+      const next = new URLSearchParams(searchParams);
+
+      // Update or remove each filter param
+      if (newFilters.minPrice !== null) {
+        next.set("min_price", String(newFilters.minPrice));
+      } else {
+        next.delete("min_price");
+      }
+
+      if (newFilters.maxPrice !== null) {
+        next.set("max_price", String(newFilters.maxPrice));
+      } else {
+        next.delete("max_price");
+      }
+
+      if (newFilters.minRating !== null) {
+        next.set("min_rating", String(newFilters.minRating));
+      } else {
+        next.delete("min_rating");
+      }
+
+      if (newFilters.inStock !== null) {
+        next.set("in_stock", "true");
+      } else {
+        next.delete("in_stock");
+      }
+
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
+
+  const handleSortChange = useCallback(
+    (newSort: SortOption) => {
+      const next = new URLSearchParams(searchParams);
+      if (newSort === "newest") {
+        // Default sort — remove from URL for cleanliness
+        next.delete("sort");
+      } else {
+        next.set("sort", newSort);
+      }
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
+
+  function handleClearAllFilters() {
+    const next = new URLSearchParams(searchParams);
+    next.delete("min_price");
+    next.delete("max_price");
+    next.delete("min_rating");
+    next.delete("in_stock");
+    next.delete("sort");
+    setSearchParams(next, { replace: true });
+  }
+
+  function handleRemoveFilter(key: string) {
+    const next = new URLSearchParams(searchParams);
+    next.delete(key);
+    setSearchParams(next, { replace: true });
   }
 
   // Find the currently selected category name for display
@@ -57,31 +174,73 @@ export function ProductListPage() {
     ? `Search results for "${searchQuery}"`
     : selectedCategoryName ?? "All Products";
 
+  // Build active filter chips
+  const activeFilterChips = buildActiveFilterChips(filters, sort);
+  const hasActiveFilters = activeFilterChips.length > 0;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-8 lg:flex-row">
-        {/* Sidebar: Category Navigation */}
+        {/* Sidebar: Category Navigation + Filters */}
         <aside className="w-full shrink-0 lg:w-64">
-          {isCategoriesLoading ? (
-            <CategoryNavSkeleton />
-          ) : (
-            <CategoryNav
-              categories={categories ?? []}
-              selectedCategoryId={categoryId}
-              onSelectCategory={handleSelectCategory}
+          <div className="space-y-8">
+            {isCategoriesLoading ? (
+              <CategoryNavSkeleton />
+            ) : (
+              <CategoryNav
+                categories={categories ?? []}
+                selectedCategoryId={categoryId}
+                onSelectCategory={handleSelectCategory}
+              />
+            )}
+
+            {/* Filter Sidebar */}
+            <FilterSidebar
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
             />
-          )}
+          </div>
         </aside>
 
         {/* Main content: Product Grid */}
         <main className="flex-1">
-          {/* Header */}
+          {/* Header with Sort */}
           <div className="mb-6">
-            <h1 className="text-2xl font-bold">{heading}</h1>
-            {!isProductsLoading && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                {products.length} product{products.length !== 1 ? "s" : ""} found
-              </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h1 className="text-2xl font-bold">{heading}</h1>
+                {!isProductsLoading && (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {products.length} product{products.length !== 1 ? "s" : ""} found
+                  </p>
+                )}
+              </div>
+              <SortSelect value={sort} onChange={handleSortChange} />
+            </div>
+
+            {/* Active Filter Chips */}
+            {hasActiveFilters && (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                {activeFilterChips.map((chip) => (
+                  <Badge
+                    key={chip.key}
+                    variant="secondary"
+                    className="flex items-center gap-1 cursor-pointer hover:bg-secondary/80"
+                    onClick={() => handleRemoveFilter(chip.key)}
+                  >
+                    {chip.label}
+                    <X className="size-3" />
+                  </Badge>
+                ))}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs text-muted-foreground"
+                  onClick={handleClearAllFilters}
+                >
+                  Clear all
+                </Button>
+              </div>
             )}
           </div>
 
@@ -91,6 +250,8 @@ export function ProductListPage() {
           ) : products.length === 0 ? (
             isSearching ? (
               <SearchEmptyState query={searchQuery} onClear={handleClearSearch} />
+            ) : hasActiveFilters ? (
+              <FilterEmptyState onClear={handleClearAllFilters} />
             ) : (
               <EmptyState categoryName={selectedCategoryName} />
             )
@@ -125,6 +286,73 @@ export function ProductListPage() {
           )}
         </main>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Build a list of active filter chips for display.
+ * Each chip has a key (URL param name) and a human-readable label.
+ */
+function buildActiveFilterChips(
+  filters: FilterValues,
+  sort: SortOption
+): { key: string; label: string }[] {
+  const chips: { key: string; label: string }[] = [];
+
+  if (filters.minPrice !== null) {
+    chips.push({
+      key: "min_price",
+      label: `Min: ${formatPrice(filters.minPrice)}`,
+    });
+  }
+  if (filters.maxPrice !== null) {
+    chips.push({
+      key: "max_price",
+      label: `Max: ${formatPrice(filters.maxPrice)}`,
+    });
+  }
+  if (filters.minRating !== null) {
+    chips.push({
+      key: "min_rating",
+      label: `${filters.minRating}+ stars`,
+    });
+  }
+  if (filters.inStock !== null) {
+    chips.push({
+      key: "in_stock",
+      label: "In stock",
+    });
+  }
+  if (sort !== "newest") {
+    const sortLabels: Record<string, string> = {
+      price_asc: "Price: Low to High",
+      price_desc: "Price: High to Low",
+      popular: "Most Popular",
+    };
+    chips.push({
+      key: "sort",
+      label: `Sort: ${sortLabels[sort] ?? sort}`,
+    });
+  }
+
+  return chips;
+}
+
+/**
+ * Empty state when no products match the current filters.
+ */
+function FilterEmptyState({ onClear }: { onClear: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <PackageSearch className="size-12 text-muted-foreground" />
+      <h2 className="mt-4 text-lg font-semibold">No products match your filters</h2>
+      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+        Try adjusting or removing some filters to see more products.
+      </p>
+      <Button variant="outline" className="mt-6" onClick={onClear}>
+        Clear all filters
+      </Button>
     </div>
   );
 }

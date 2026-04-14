@@ -133,12 +133,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T054 [US4] Add filter parameters (min_price, max_price, min_rating, in_stock) and sort parameter (price_asc, price_desc, newest, popular) to ProductService.list_products() with appropriate WHERE clauses and ORDER BY in `backend/app/services/product_service.py`
-- [ ] T055 [US4] Add filter and sort query parameters to GET `/api/v1/products` endpoint with validation via Pydantic in `backend/app/api/v1/products.py`
-- [ ] T056 [P] [US4] Create FilterSidebar component with price range slider (min/max), rating selector (1-5 stars), and in-stock toggle in `frontend/src/components/filter-sidebar.tsx`
-- [ ] T057 [P] [US4] Create SortSelect component with dropdown for price_asc, price_desc, newest, popular in `frontend/src/components/sort-select.tsx`
-- [ ] T058 [US4] Update useProducts hook to accept all filter and sort parameters in `frontend/src/hooks/use-products.ts`
-- [ ] T059 [US4] Update ProductListPage to integrate FilterSidebar and SortSelect, sync all filter/sort state to URL query params, display active filters as removable Badge chips, include "Clear all filters" action, and update results without page reload in `frontend/src/pages/product-list.tsx`
+- [x] T054 [US4] Add filter parameters (min_price, max_price, min_rating, in_stock) and sort parameter (price_asc, price_desc, newest, popular) to ProductService.list_products() with appropriate WHERE clauses and ORDER BY in `backend/app/services/product_service.py`
+- [x] T055 [US4] Add filter and sort query parameters to GET `/api/v1/products` endpoint with validation via Pydantic in `backend/app/api/v1/products.py`
+- [x] T056 [P] [US4] Create FilterSidebar component with price range slider (min/max), rating selector (1-5 stars), and in-stock toggle in `frontend/src/components/filter-sidebar.tsx`
+- [x] T057 [P] [US4] Create SortSelect component with dropdown for price_asc, price_desc, newest, popular in `frontend/src/components/sort-select.tsx`
+- [x] T058 [US4] Update useProducts hook to accept all filter and sort parameters in `frontend/src/hooks/use-products.ts`
+- [x] T059 [US4] Update ProductListPage to integrate FilterSidebar and SortSelect, sync all filter/sort state to URL query params, display active filters as removable Badge chips, include "Clear all filters" action, and update results without page reload in `frontend/src/pages/product-list.tsx`
 
 **Checkpoint**: Full filtering and sorting functional. URL state enables bookmarking/sharing of filtered views. No page reloads on filter change.
 

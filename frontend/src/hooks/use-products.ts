@@ -4,32 +4,52 @@ import type {
   PaginatedResponse,
   ProductDetail,
   ProductListItem,
+  SortOption,
 } from "@/lib/types";
 
 interface UseProductsParams {
   categoryId?: string | null;
   q?: string | null;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  minRating?: number | null;
+  inStock?: boolean | null;
+  sort?: SortOption;
   pageSize?: number;
 }
 
 /**
- * Fetch paginated product list with optional category filter and search query.
+ * Fetch paginated product list with optional category filter, search query,
+ * price/rating/stock filters, and sort order.
  * Uses useInfiniteQuery for cursor-based "Load More" pagination.
  *
- * When `q` is provided, results are ranked by relevance via full-text search.
- * When not provided, results are sorted by newest first.
+ * When `q` is provided, results are ranked by relevance via full-text search (sort ignored).
+ * When not provided, results are sorted by the chosen sort option (default: newest).
  */
 export function useProducts({
   categoryId,
   q,
+  minPrice,
+  maxPrice,
+  minRating,
+  inStock,
+  sort = "newest",
   pageSize = 20,
 }: UseProductsParams = {}) {
   return useInfiniteQuery({
-    queryKey: ["products", { categoryId, q, pageSize }],
+    queryKey: [
+      "products",
+      { categoryId, q, minPrice, maxPrice, minRating, inStock, sort, pageSize },
+    ],
     queryFn: ({ pageParam }) =>
       apiClient.get<PaginatedResponse<ProductListItem>>("/products", {
         category_id: categoryId ?? undefined,
         q: q ?? undefined,
+        min_price: minPrice ?? undefined,
+        max_price: maxPrice ?? undefined,
+        min_rating: minRating ?? undefined,
+        in_stock: inStock ?? undefined,
+        sort: sort,
         page_size: pageSize,
         after: pageParam ?? undefined,
       }),

@@ -1,6 +1,7 @@
 import base64
 import json
 import uuid
+from enum import StrEnum
 
 from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,6 +19,15 @@ from app.schemas.product import (
     ProductListResponse,
     ProductVariantDetail,
 )
+
+
+class SortOption(StrEnum):
+    """Allowed sort options for product listing."""
+
+    PRICE_ASC = "price_asc"
+    PRICE_DESC = "price_desc"
+    NEWEST = "newest"
+    POPULAR = "popular"
 
 
 def _build_product_list_item(product: Product) -> ProductListItem:
@@ -62,14 +72,29 @@ async def list_products(
     *,
     category_id: uuid.UUID | None = None,
     q: str | None = None,
+    min_price: int | None = None,
+    max_price: int | None = None,
+    min_rating: int | None = None,
+    in_stock: bool | None = None,
+    sort: SortOption = SortOption.NEWEST,
     after: str | None = None,
     page_size: int = 20,
 ) -> ProductListResponse:
-    """List products with optional category filter, full-text search, and cursor-based pagination.
+    """List products with optional category filter, full-text search, filtering, sorting, and cursor-based pagination.
+
+    Filters:
+      - min_price / max_price: filter by base_price in cents
+      - min_rating: filter by minimum average rating (placeholder, currently no-op)
+      - in_stock: if True, only products with at least one variant with stock > 0
+
+    Sort options:
+      - newest: created_at desc (default)
+      - price_asc: base_price asc
+      - price_desc: base_price desc
+      - popular: placeholder, falls back to newest
 
     When a search query `q` is provided, results are ranked by relevance using
-    PostgreSQL ts_rank against the search_vector column. When no query is provided,
-    products are sorted by newest first (created_at desc).
+    PostgreSQL ts_rank against the search_vector column (sort is ignored for search).
     Only active, non-deleted products are returned.
     """
     is_search = q is not None and q.strip() != ""
@@ -79,6 +104,10 @@ async def list_products(
             db,
             q=q,  # type: ignore[arg-type]
             category_id=category_id,
+            min_price=min_price,
+            max_price=max_price,
+            min_rating=min_rating,
+            in_stock=in_stock,
             after=after,
             page_size=page_size,
         )
@@ -86,9 +115,47 @@ async def list_products(
     return await _list_products_browse(
         db,
         category_id=category_id,
+        min_price=min_price,
+        max_price=max_price,
+        min_rating=min_rating,
+        in_stock=in_stock,
+        sort=sort,
         after=after,
         page_size=page_size,
     )
+
+
+def _apply_filters(
+    query: select,  # type: ignore[type-arg]
+    *,
+    category_id: uuid.UUID | None = None,
+    min_price: int | None = None,
+    max_price: int | None = None,
+    min_rating: int | None = None,
+    in_stock: bool | None = None,
+) -> select:  # type: ignore[type-arg]
+    """Apply shared filter clauses to a product query."""
+    if category_id is not None:
+        query = query.where(Product.category_id == category_id)
+    if min_price is not None:
+        query = query.where(Product.base_price >= min_price)
+    if max_price is not None:
+        query = query.where(Product.base_price <= max_price)
+    # min_rating: placeholder — Review model not yet implemented, no-op for now
+    if in_stock is True:
+        # Subquery: product must have at least one variant with stock > 0
+        in_stock_subquery = (
+            select(ProductVariant.product_id)
+            .where(ProductVariant.stock_quantity > 0)
+            .correlate(Product)
+            .exists()
+        )
+        query = query.where(
+            Product.id.in_(
+                select(ProductVariant.product_id).where(ProductVariant.stock_quantity > 0)
+            )
+        )
+    return query
 
 
 async def _list_products_search(
@@ -96,6 +163,10 @@ async def _list_products_search(
     *,
     q: str,
     category_id: uuid.UUID | None = None,
+    min_price: int | None = None,
+    max_price: int | None = None,
+    min_rating: int | None = None,
+    in_stock: bool | None = None,
     after: str | None = None,
     page_size: int = 20,
 ) -> ProductListResponse:
@@ -118,9 +189,15 @@ async def _list_products_search(
         .order_by(text("search_rank DESC"), Product.id.desc())
     )
 
-    # Apply category filter
-    if category_id is not None:
-        query = query.where(Product.category_id == category_id)
+    # Apply shared filters
+    query = _apply_filters(
+        query,
+        category_id=category_id,
+        min_price=min_price,
+        max_price=max_price,
+        min_rating=min_rating,
+        in_stock=in_stock,
+    )
 
     # Decode offset from cursor for search pagination
     offset = 0
@@ -161,27 +238,41 @@ async def _list_products_browse(
     db: AsyncSession,
     *,
     category_id: uuid.UUID | None = None,
+    min_price: int | None = None,
+    max_price: int | None = None,
+    min_rating: int | None = None,
+    in_stock: bool | None = None,
+    sort: SortOption = SortOption.NEWEST,
     after: str | None = None,
     page_size: int = 20,
 ) -> ProductListResponse:
-    """List products for browsing (no search), sorted by newest first with cursor pagination."""
+    """List products for browsing (no search), with filtering and sorting via cursor pagination."""
     query = select(Product).where(
         Product.is_active.is_(True),
         Product.deleted_at.is_(None),
     )
 
-    # Apply category filter
-    if category_id is not None:
-        query = query.where(Product.category_id == category_id)
+    # Apply shared filters
+    query = _apply_filters(
+        query,
+        category_id=category_id,
+        min_price=min_price,
+        max_price=max_price,
+        min_rating=min_rating,
+        in_stock=in_stock,
+    )
 
-    # Apply cursor-based pagination, sorted by newest first
+    # Determine sort column and direction from sort option
+    sort_column, sort_direction, sort_column_name = _resolve_sort(sort)
+
+    # Apply cursor-based pagination with chosen sort
     query = apply_cursor_pagination(
         query=query,
-        sort_column=Product.created_at,
+        sort_column=sort_column,
         id_column=Product.id,
         page_size=page_size,
         after=after,
-        sort_direction="desc",
+        sort_direction=sort_direction,
     )
 
     result = await db.execute(query)
@@ -191,7 +282,7 @@ async def _list_products_browse(
     cursor_page = build_cursor_page(
         rows=products,
         page_size=page_size,
-        sort_column_name="created_at",
+        sort_column_name=sort_column_name,
     )
 
     items = [_build_product_list_item(product) for product in cursor_page.items]
@@ -201,6 +292,20 @@ async def _list_products_browse(
         next_cursor=cursor_page.next_cursor,
         has_next_page=cursor_page.has_next_page,
     )
+
+
+def _resolve_sort(sort: SortOption) -> tuple:
+    """Resolve a SortOption into (sort_column, sort_direction, sort_column_name)."""
+    if sort == SortOption.PRICE_ASC:
+        return Product.base_price, "asc", "base_price"
+    elif sort == SortOption.PRICE_DESC:
+        return Product.base_price, "desc", "base_price"
+    elif sort == SortOption.POPULAR:
+        # Placeholder: popular sorts by newest until review/order data is available
+        return Product.created_at, "desc", "created_at"
+    else:
+        # Default: newest
+        return Product.created_at, "desc", "created_at"
 
 
 async def get_product_by_slug(
