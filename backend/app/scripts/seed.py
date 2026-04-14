@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import async_session_factory
 from app.models.category import Category
 from app.models.product import Product, ProductImage, ProductVariant
+from app.models.review import Review
 
 # Image base URL
 IMG = "https://images.unsplash.com/photo-"
@@ -358,8 +359,110 @@ async def seed_products(
     return products
 
 
+async def seed_reviews(
+    session: AsyncSession,
+    products: list[Product],
+) -> int:
+    """Create sample reviews for products."""
+    # Generate deterministic user UUIDs for seed data
+    seed_users = [
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567801"), "Alice Johnson"),
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567802"), "Bob Smith"),
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567803"), "Carol White"),
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567804"), "David Brown"),
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567805"), "Eve Martinez"),
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567806"), "Frank Lee"),
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567807"), "Grace Kim"),
+        (uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567808"), "Henry Davis"),
+    ]
+
+    # Reviews mapped by product slug
+    reviews_data: dict[str, list[tuple[int, int, str]]] = {
+        # (user_index, rating, text)
+        "probook-ultra-15": [
+            (0, 5, "Incredible performance! The 4K display is stunning and the processor handles everything I throw at it. Best laptop I've owned."),
+            (1, 4, "Great build quality and performance. Only wish the battery lasted a bit longer under heavy workloads. The display is gorgeous though."),
+            (2, 5, "Perfect for my design work. Fast, beautiful screen, and the keyboard is comfortable for long sessions."),
+            (3, 4, "Solid laptop for the price. Handles video editing smoothly. The fan can get a bit loud under sustained load."),
+            (4, 3, "Good laptop overall but runs hot during intensive tasks. Performance is great when it's not thermal throttling."),
+        ],
+        "swiftphone-14-pro": [
+            (0, 5, "The camera system is unbelievable. Night photos look like daylight. Battery easily lasts all day. Love this phone."),
+            (1, 5, "Upgraded from the 12 and the difference is night and day. The OLED display is the best I've seen on any phone."),
+            (2, 4, "Fantastic phone. The 200MP camera takes incredible detail shots. Only minor complaint is the weight."),
+            (3, 4, "Great phone, fast 5G, amazing display. Wish it came with a charger in the box though."),
+            (5, 5, "Best smartphone I've ever used. The triple camera system is versatile and the battery life is outstanding."),
+            (6, 3, "Good phone but expensive. The camera is excellent but I'm not sure it justifies the premium over the standard model."),
+        ],
+        "soundwave-pro-headphones": [
+            (0, 5, "The noise cancellation is phenomenal. I use these on flights and in the office. 40 hours of battery is not an exaggeration."),
+            (2, 4, "Excellent sound quality and comfortable for long listening sessions. The ANC is top-tier."),
+            (4, 5, "Studio-quality sound wasn't an overstatement. These are my daily drivers now. Multipoint is seamless."),
+            (6, 4, "Very comfortable and great sound. The carrying case is a nice touch. Bluetooth 5.3 connectivity is rock solid."),
+        ],
+        "classic-oxford-shirt": [
+            (1, 5, "Perfect fit and excellent quality cotton. The relaxed fit is comfortable without being too baggy. Ordered three more."),
+            (3, 4, "Nice shirt for the price. Fabric is soft and breathable. Holds up well after multiple washes."),
+            (5, 5, "Best oxford shirt I've found. The collar roll is perfect and the fabric gets better with each wash."),
+            (7, 3, "Good quality but runs a bit large. I'd recommend sizing down. The light blue color is beautiful."),
+        ],
+        "silk-midi-dress": [
+            (0, 5, "Absolutely stunning dress. The silk quality is luxurious and the A-line cut is incredibly flattering."),
+            (2, 5, "Wore this to a wedding and got so many compliments. The adjustable waist tie is a thoughtful detail."),
+            (4, 4, "Beautiful dress. The emerald color is even better in person. Only note: it wrinkles easily so hang it up."),
+        ],
+        "ergonomic-office-chair": [
+            (1, 5, "Game changer for working from home. My back pain disappeared after switching to this chair. Worth every penny."),
+            (3, 4, "Very comfortable for long work days. The lumbar support is adjustable which is great. Assembly took about 30 minutes."),
+            (5, 5, "Best office chair I've owned. The mesh back keeps you cool and the armrests are actually useful."),
+            (7, 4, "Solid chair. The adjustability is impressive. Only wish the seat cushion was a bit softer."),
+        ],
+        "cast-iron-dutch-oven": [
+            (0, 5, "Makes incredible soups and bread. The heat distribution is perfectly even. This will last a lifetime."),
+            (2, 5, "Heavy but worth it. My sourdough bread has never been better. The enamel coating makes cleanup easy."),
+            (4, 4, "Excellent Dutch oven. The cherry red color looks beautiful on the table. Handles large roasts with ease."),
+            (6, 5, "Restaurant quality results at home. I use it almost daily. The self-basting lid is genius."),
+            (7, 4, "Great quality cast iron. It's heavy but that's expected. Heats evenly and retains heat well."),
+        ],
+        "adjustable-dumbbell-set": [
+            (1, 5, "Replaced my entire dumbbell rack. The dial mechanism is smooth and quick. Perfect for home workouts."),
+            (3, 4, "Great space saver. The weight increments are convenient. The storage tray keeps things organized."),
+            (5, 4, "Good quality adjustable dumbbells. The range from 5-52.5 lbs covers all my exercises. Smooth transitions."),
+        ],
+        "premium-yoga-mat": [
+            (0, 5, "The grip gets better when you sweat - perfect for hot yoga. The thickness provides great cushioning."),
+            (2, 4, "Love the eco-friendly materials. The sage green color is calming. Carrying strap is convenient."),
+            (4, 5, "Best yoga mat I've ever used. Non-slip surface is incredible. Worth the investment."),
+            (6, 4, "Nice thick mat with good grip. The natural rubber smell fades after a few uses. Very durable."),
+        ],
+    }
+
+    review_count = 0
+    product_map = {p.slug: p for p in products}
+
+    for product_slug, product_reviews in reviews_data.items():
+        product = product_map.get(product_slug)
+        if product is None:
+            continue
+
+        for user_index, rating, review_text in product_reviews:
+            user_id, _ = seed_users[user_index]
+            review = Review(
+                product_id=product.id,
+                user_id=user_id,
+                rating=rating,
+                text=review_text,
+            )
+            session.add(review)
+            review_count += 1
+
+    await session.flush()
+    return review_count
+
+
 async def clear_data(session: AsyncSession) -> None:
     """Clear all existing seed data."""
+    await session.execute(text("DELETE FROM reviews"))
     await session.execute(text("DELETE FROM product_variants"))
     await session.execute(text("DELETE FROM product_images"))
     await session.execute(text("DELETE FROM products"))
@@ -386,6 +489,11 @@ async def seed() -> None:
             print("  Creating products with images and variants...")
             products = await seed_products(session, categories)
             print(f"    Created {len(products)} products")
+
+            # Seed reviews
+            print("  Creating reviews...")
+            review_count = await seed_reviews(session, products)
+            print(f"    Created {review_count} reviews")
 
     print("Seeding complete!")
 

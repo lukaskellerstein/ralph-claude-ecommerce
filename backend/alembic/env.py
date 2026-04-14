@@ -11,6 +11,7 @@ from app.core.database import Base
 # Import all models so Alembic can detect them
 from app.models.category import Category  # noqa: F401
 from app.models.product import Product, ProductImage, ProductVariant  # noqa: F401
+from app.models.review import Review  # noqa: F401
 
 config = context.config
 

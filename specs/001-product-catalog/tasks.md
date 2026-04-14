@@ -152,17 +152,17 @@
 
 ### Implementation for User Story 5
 
-- [ ] T060 [P] [US5] Create Review SQLAlchemy model (id UUID PK, product_id FK, user_id FK, rating smallint CHECK 1-5, text, created_at, updated_at) with unique constraint on (user_id, product_id) and indexes in `backend/app/models/review.py`
-- [ ] T061 [US5] Generate Alembic migration for Review table in `backend/alembic/versions/`
-- [ ] T062 [US5] Create Review Pydantic schemas (ReviewItem with reviewer_name, ReviewListResponse with cursor pagination) in `backend/app/schemas/review.py`
-- [ ] T063 [US5] Implement ReviewService.list_reviews() with product slug lookup, cursor-based pagination (default page_size=10), ordered by created_at desc in `backend/app/services/review_service.py`
-- [ ] T064 [US5] Create GET `/api/v1/products/{slug}/reviews` endpoint with cursor pagination in `backend/app/api/v1/reviews.py`
-- [ ] T065 [US5] Register reviews router on the API v1 router in `backend/app/api/v1/__init__.py`
-- [ ] T066 [P] [US5] Create ReviewList component displaying individual reviews (reviewer name, star rating, text, date) with "Load more" pagination in `frontend/src/components/review-list.tsx`
-- [ ] T067 [P] [US5] Create RatingDistribution component showing bar chart of 1-5 star counts alongside average rating in `frontend/src/components/rating-display.tsx`
-- [ ] T068 [US5] Create useReviews TanStack Query hook (GET /api/v1/products/:slug/reviews with useInfiniteQuery) in `frontend/src/hooks/use-reviews.ts`
-- [ ] T069 [US5] Integrate ReviewList and RatingDistribution into ProductDetailPage below the product details section in `frontend/src/pages/product-detail.tsx`
-- [ ] T070 [US5] Add review seed data (sample reviews for products) to seed script in `backend/app/scripts/seed.py`
+- [x] T060 [P] [US5] Create Review SQLAlchemy model (id UUID PK, product_id FK, user_id FK, rating smallint CHECK 1-5, text, created_at, updated_at) with unique constraint on (user_id, product_id) and indexes in `backend/app/models/review.py`
+- [x] T061 [US5] Generate Alembic migration for Review table in `backend/alembic/versions/`
+- [x] T062 [US5] Create Review Pydantic schemas (ReviewItem with reviewer_name, ReviewListResponse with cursor pagination) in `backend/app/schemas/review.py`
+- [x] T063 [US5] Implement ReviewService.list_reviews() with product slug lookup, cursor-based pagination (default page_size=10), ordered by created_at desc in `backend/app/services/review_service.py`
+- [x] T064 [US5] Create GET `/api/v1/products/{slug}/reviews` endpoint with cursor pagination in `backend/app/api/v1/reviews.py`
+- [x] T065 [US5] Register reviews router on the API v1 router in `backend/app/api/v1/__init__.py`
+- [x] T066 [P] [US5] Create ReviewList component displaying individual reviews (reviewer name, star rating, text, date) with "Load more" pagination in `frontend/src/components/review-list.tsx`
+- [x] T067 [P] [US5] Create RatingDistribution component showing bar chart of 1-5 star counts alongside average rating in `frontend/src/components/rating-display.tsx`
+- [x] T068 [US5] Create useReviews TanStack Query hook (GET /api/v1/products/:slug/reviews with useInfiniteQuery) in `frontend/src/hooks/use-reviews.ts`
+- [x] T069 [US5] Integrate ReviewList and RatingDistribution into ProductDetailPage below the product details section in `frontend/src/pages/product-detail.tsx`
+- [x] T070 [US5] Add review seed data (sample reviews for products) to seed script in `backend/app/scripts/seed.py`
 
 **Checkpoint**: Product pages display reviews with ratings, text, pagination, and an aggregate rating distribution chart.
 

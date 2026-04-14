@@ -50,6 +50,11 @@ class Product(Base):
         lazy="selectin",
         cascade="all, delete-orphan",
     )
+    reviews: Mapped[list["Review"]] = relationship(  # type: ignore[name-defined]  # noqa: F821
+        "Review",
+        back_populates="product",
+        lazy="noload",
+    )
 
     __table_args__ = (
         Index("ix_products_slug", "slug", unique=True),

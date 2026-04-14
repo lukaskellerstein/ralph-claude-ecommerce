@@ -15,6 +15,7 @@ import {
   RatingDisplay,
   RatingDistribution,
 } from "@/components/rating-display";
+import { ReviewList } from "@/components/review-list";
 import { useProduct } from "@/hooks/use-products";
 import { formatPrice } from "@/lib/utils";
 import { ApiRequestError } from "@/lib/api-client";
@@ -235,10 +236,12 @@ export function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Rating distribution section */}
-      {product.review_count > 0 && (
-        <section className="mt-12 border-t pt-8">
-          <h2 className="text-xl font-semibold">Customer Reviews</h2>
+      {/* Reviews section */}
+      <section className="mt-12 border-t pt-8">
+        <h2 className="text-xl font-semibold">Customer Reviews</h2>
+
+        {/* Rating summary and distribution */}
+        {product.review_count > 0 && (
           <div className="mt-4 grid gap-6 md:grid-cols-2">
             <div className="space-y-3">
               <RatingDisplay
@@ -252,8 +255,13 @@ export function ProductDetailPage() {
               />
             </div>
           </div>
-        </section>
-      )}
+        )}
+
+        {/* Individual reviews with pagination */}
+        <div className="mt-8">
+          {slug && <ReviewList slug={slug} />}
+        </div>
+      </section>
     </div>
   );
 }

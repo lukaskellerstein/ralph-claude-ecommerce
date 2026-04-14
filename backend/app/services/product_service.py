@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.errors import NotFoundError
 from app.core.pagination import apply_cursor_pagination, build_cursor_page, decode_cursor
 from app.models.product import Product, ProductImage, ProductVariant
+from app.models.review import Review
+from app.services.review_service import get_product_rating_stats
 from app.schemas.product import (
     CategoryRef,
     CategoryWithParent,
@@ -30,7 +32,11 @@ class SortOption(StrEnum):
     POPULAR = "popular"
 
 
-def _build_product_list_item(product: Product) -> ProductListItem:
+def _build_product_list_item(
+    product: Product,
+    average_rating: float = 0.0,
+    review_count: int = 0,
+) -> ProductListItem:
     """Convert a Product ORM instance to a ProductListItem response schema."""
     # Get primary image (position=0 or first available)
     primary_image: ProductImageRef | None = None
@@ -52,7 +58,6 @@ def _build_product_list_item(product: Product) -> ProductListItem:
         slug=product.category.slug,
     )
 
-    # For now, average_rating and review_count are 0 (Review model not yet implemented)
     return ProductListItem(
         id=product.id,
         name=product.name,
@@ -61,10 +66,41 @@ def _build_product_list_item(product: Product) -> ProductListItem:
         base_price=product.base_price,
         category=category_ref,
         primary_image=primary_image,
-        average_rating=0.0,
-        review_count=0,
+        average_rating=average_rating,
+        review_count=review_count,
         has_stock=has_stock,
     )
+
+
+async def _get_product_ratings_batch(
+    db: AsyncSession,
+    product_ids: list[uuid.UUID],
+) -> dict[uuid.UUID, tuple[float, int]]:
+    """Fetch average rating and review count for a batch of products.
+
+    Returns a dict mapping product_id to (average_rating, review_count).
+    """
+    if not product_ids:
+        return {}
+
+    query = (
+        select(
+            Review.product_id,
+            func.count(Review.id).label("review_count"),
+            func.coalesce(func.avg(Review.rating), 0).label("average_rating"),
+        )
+        .where(Review.product_id.in_(product_ids))
+        .group_by(Review.product_id)
+    )
+
+    result = await db.execute(query)
+    rows = result.all()
+
+    ratings: dict[uuid.UUID, tuple[float, int]] = {}
+    for row in rows:
+        ratings[row.product_id] = (float(row.average_rating), int(row.review_count))
+
+    return ratings
 
 
 async def list_products(
@@ -141,7 +177,14 @@ def _apply_filters(
         query = query.where(Product.base_price >= min_price)
     if max_price is not None:
         query = query.where(Product.base_price <= max_price)
-    # min_rating: placeholder — Review model not yet implemented, no-op for now
+    # min_rating: filter products whose average rating >= min_rating
+    if min_rating is not None:
+        avg_rating_subquery = (
+            select(Review.product_id)
+            .group_by(Review.product_id)
+            .having(func.avg(Review.rating) >= min_rating)
+        )
+        query = query.where(Product.id.in_(avg_rating_subquery))
     if in_stock is True:
         # Subquery: product must have at least one variant with stock > 0
         in_stock_subquery = (
@@ -225,7 +268,20 @@ async def _list_products_search(
         next_cursor = base64.urlsafe_b64encode(cursor_payload.encode()).decode()
 
     # Extract Product objects from result rows (each row is (Product, rank))
-    items = [_build_product_list_item(row[0]) for row in result_rows]
+    products_list = [row[0] for row in result_rows]
+
+    # Fetch ratings for all products in the page
+    product_ids = [p.id for p in products_list]
+    ratings_map = await _get_product_ratings_batch(db, product_ids)
+
+    items = [
+        _build_product_list_item(
+            p,
+            average_rating=ratings_map.get(p.id, (0.0, 0))[0],
+            review_count=ratings_map.get(p.id, (0.0, 0))[1],
+        )
+        for p in products_list
+    ]
 
     return ProductListResponse(
         items=items,
@@ -285,7 +341,18 @@ async def _list_products_browse(
         sort_column_name=sort_column_name,
     )
 
-    items = [_build_product_list_item(product) for product in cursor_page.items]
+    # Fetch ratings for all products in the page
+    product_ids = [p.id for p in cursor_page.items]
+    ratings_map = await _get_product_ratings_batch(db, product_ids)
+
+    items = [
+        _build_product_list_item(
+            product,
+            average_rating=ratings_map.get(product.id, (0.0, 0))[0],
+            review_count=ratings_map.get(product.id, (0.0, 0))[1],
+        )
+        for product in cursor_page.items
+    ]
 
     return ProductListResponse(
         items=items,
@@ -379,15 +446,10 @@ async def get_product_by_slug(
         for v in product.variants
     ]
 
-    # Rating distribution — placeholder until Review model is implemented
-    # Returns empty distribution with 0 counts for each star rating
-    rating_distribution: dict[str, int] = {
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-    }
+    # Fetch real rating statistics from reviews
+    average_rating, review_count, rating_distribution = await get_product_rating_stats(
+        db, product_id=product.id
+    )
 
     return ProductDetail(
         id=product.id,
@@ -398,8 +460,8 @@ async def get_product_by_slug(
         category=category_with_parent,
         images=images,
         variants=variants,
-        average_rating=0.0,
-        review_count=0,
+        average_rating=round(average_rating, 1),
+        review_count=review_count,
         rating_distribution=rating_distribution,
         created_at=product.created_at,
     )
