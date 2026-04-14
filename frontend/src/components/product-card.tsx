@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn, formatPrice, truncate, getPlaceholderImage } from "@/lib/utils";
+import { formatPrice, getPlaceholderImage } from "@/lib/utils";
 import type { ProductListItem } from "@/lib/types";
 
 interface ProductCardProps {

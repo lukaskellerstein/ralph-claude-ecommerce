@@ -92,15 +92,15 @@
 
 ### Implementation for User Story 2
 
-- [ ] T039 [US2] Create Product detail Pydantic schema (ProductDetail with all fields: images ordered by position, variants with resolved price, category with parent breadcrumb, rating_distribution) in `backend/app/schemas/product.py`
-- [ ] T040 [US2] Implement ProductService.get_by_slug() returning full product detail with images, variants, category breadcrumb, average_rating, review_count, and rating_distribution in `backend/app/services/product_service.py`
-- [ ] T041 [US2] Create GET `/api/v1/products/{slug}` endpoint returning ProductDetail (404 if not found or soft-deleted) in `backend/app/api/v1/products.py`
-- [ ] T042 [P] [US2] Create ProductGallery component with main image display and thumbnail navigation strip in `frontend/src/components/product-gallery.tsx`
-- [ ] T043 [P] [US2] Create VariantSelector component with grouped options (size, color), active selection state, price/stock update on selection, and out-of-stock disabled state in `frontend/src/components/variant-selector.tsx`
-- [ ] T044 [P] [US2] Create RatingDisplay component showing star rating, average score, and review count in `frontend/src/components/rating-display.tsx`
-- [ ] T045 [US2] Create useProduct TanStack Query hook (GET /api/v1/products/:slug) in `frontend/src/hooks/use-products.ts`
-- [ ] T046 [US2] Create ProductDetailPage with gallery, variant selector, price display, "Add to Cart" button, category breadcrumb, rating summary, and SEO meta tags (title, description, Open Graph) in `frontend/src/pages/product-detail.tsx`
-- [ ] T047 [US2] Handle product-not-found (404) state with friendly message and link back to catalog in `frontend/src/pages/product-detail.tsx`
+- [x] T039 [US2] Create Product detail Pydantic schema (ProductDetail with all fields: images ordered by position, variants with resolved price, category with parent breadcrumb, rating_distribution) in `backend/app/schemas/product.py`
+- [x] T040 [US2] Implement ProductService.get_by_slug() returning full product detail with images, variants, category breadcrumb, average_rating, review_count, and rating_distribution in `backend/app/services/product_service.py`
+- [x] T041 [US2] Create GET `/api/v1/products/{slug}` endpoint returning ProductDetail (404 if not found or soft-deleted) in `backend/app/api/v1/products.py`
+- [x] T042 [P] [US2] Create ProductGallery component with main image display and thumbnail navigation strip in `frontend/src/components/product-gallery.tsx`
+- [x] T043 [P] [US2] Create VariantSelector component with grouped options (size, color), active selection state, price/stock update on selection, and out-of-stock disabled state in `frontend/src/components/variant-selector.tsx`
+- [x] T044 [P] [US2] Create RatingDisplay component showing star rating, average score, and review count in `frontend/src/components/rating-display.tsx`
+- [x] T045 [US2] Create useProduct TanStack Query hook (GET /api/v1/products/:slug) in `frontend/src/hooks/use-products.ts`
+- [x] T046 [US2] Create ProductDetailPage with gallery, variant selector, price display, "Add to Cart" button, category breadcrumb, rating summary, and SEO meta tags (title, description, Open Graph) in `frontend/src/pages/product-detail.tsx`
+- [x] T047 [US2] Handle product-not-found (404) state with friendly message and link back to catalog in `frontend/src/pages/product-detail.tsx`
 
 **Checkpoint**: Shoppers can view full product details, browse images, select variants, and see updated pricing. Product pages have SEO meta tags.
 
@@ -114,12 +114,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T048 [US3] Add full-text search to ProductService.list_products() — accept `q` parameter, query against search_vector using plainto_tsquery, rank results with ts_rank in `backend/app/services/product_service.py`
-- [ ] T049 [US3] Add `q` query parameter to GET `/api/v1/products` endpoint, passing through to ProductService in `backend/app/api/v1/products.py`
-- [ ] T050 [US3] Create SearchBar component with input field, submit handler, and search icon — accessible from all pages via layout header in `frontend/src/components/search-bar.tsx`
-- [ ] T051 [US3] Add SearchBar to application layout/header so it appears on every page in `frontend/src/App.tsx`
-- [ ] T052 [US3] Update useProducts hook to accept `q` parameter and pass to API in `frontend/src/hooks/use-products.ts`
-- [ ] T053 [US3] Update ProductListPage to handle search query from URL params, display search results with query shown, and show friendly empty state with suggestions when no results match in `frontend/src/pages/product-list.tsx`
+- [x] T048 [US3] Add full-text search to ProductService.list_products() — accept `q` parameter, query against search_vector using plainto_tsquery, rank results with ts_rank in `backend/app/services/product_service.py`
+- [x] T049 [US3] Add `q` query parameter to GET `/api/v1/products` endpoint, passing through to ProductService in `backend/app/api/v1/products.py`
+- [x] T050 [US3] Create SearchBar component with input field, submit handler, and search icon — accessible from all pages via layout header in `frontend/src/components/search-bar.tsx`
+- [x] T051 [US3] Add SearchBar to application layout/header so it appears on every page in `frontend/src/App.tsx`
+- [x] T052 [US3] Update useProducts hook to accept `q` parameter and pass to API in `frontend/src/hooks/use-products.ts`
+- [x] T053 [US3] Update ProductListPage to handle search query from URL params, display search results with query shown, and show friendly empty state with suggestions when no results match in `frontend/src/pages/product-list.tsx`
 
 **Checkpoint**: Full-text search works across product names and descriptions. Results are relevance-ranked. Empty states guide users.
 
