@@ -36,24 +36,24 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T009 Create FastAPI application entry point with CORS middleware, API router mount at `/api/v1/`, and OpenAPI config in `backend/app/main.py`
-- [ ] T010 Create async SQLAlchemy engine, session factory, and Base declarative model in `backend/app/core/database.py`
-- [ ] T011 Create dependency injection for async DB session and current user (optional auth) in `backend/app/core/deps.py`
-- [ ] T012 Create application settings from environment variables in `backend/app/core/config.py`
-- [ ] T013 Initialize Alembic with async SQLAlchemy configuration in `backend/alembic.ini` and `backend/alembic/env.py`
-- [ ] T014 [P] Create Category SQLAlchemy model (id UUID PK, name, slug unique, parent_id self-FK nullable, position, created_at, updated_at) with indexes in `backend/app/models/category.py`
-- [ ] T015 [P] Create Product SQLAlchemy model (id UUID PK, name, slug unique, description, base_price int, category_id FK, is_active, search_vector tsvector, deleted_at, created_at, updated_at) with indexes and GIN index on search_vector in `backend/app/models/product.py`
-- [ ] T016 [P] Create ProductImage SQLAlchemy model (id UUID PK, product_id FK cascade, url, alt_text, position, created_at, updated_at) with indexes in `backend/app/models/product.py`
-- [ ] T017 [P] Create ProductVariant SQLAlchemy model (id UUID PK, product_id FK cascade, variant_type, variant_value, sku unique, price_override nullable int, stock_quantity, created_at, updated_at) with unique constraint on (product_id, variant_type, variant_value) in `backend/app/models/product.py`
-- [ ] T018 Generate Alembic migration for Category, Product, ProductImage, and ProductVariant tables including search_vector trigger in `backend/alembic/versions/`
-- [ ] T019 Create cursor-based pagination utility (encode/decode opaque base64 cursors, apply WHERE/ORDER/LIMIT, return has_next_page) in `backend/app/core/pagination.py`
-- [ ] T020 Create consistent error response format (`{"detail": "message", "code": "ERROR_CODE"}`) and exception handlers in `backend/app/core/errors.py`
-- [ ] T021 Create Pydantic base schemas (PaginatedResponse, CursorParams, ErrorResponse) in `backend/app/schemas/common.py`
-- [ ] T022 Create API client with base URL, error handling, and TypeScript types in `frontend/src/lib/api-client.ts`
-- [ ] T023 Create shared TypeScript types (Product, Category, ProductImage, ProductVariant, PaginatedResponse) in `frontend/src/lib/types.ts`
-- [ ] T024 Create price formatting utility (cents to display string) and other shared helpers in `frontend/src/lib/utils.ts`
-- [ ] T025 Create TanStack Query provider setup in `frontend/src/App.tsx` with React Router (routes for `/products` and `/products/:slug`)
-- [ ] T026 Create seed data script with sample categories (2 levels), products, images, and variants in `backend/app/scripts/seed.py`
+- [x] T009 Create FastAPI application entry point with CORS middleware, API router mount at `/api/v1/`, and OpenAPI config in `backend/app/main.py`
+- [x] T010 Create async SQLAlchemy engine, session factory, and Base declarative model in `backend/app/core/database.py`
+- [x] T011 Create dependency injection for async DB session and current user (optional auth) in `backend/app/core/deps.py`
+- [x] T012 Create application settings from environment variables in `backend/app/core/config.py`
+- [x] T013 Initialize Alembic with async SQLAlchemy configuration in `backend/alembic.ini` and `backend/alembic/env.py`
+- [x] T014 [P] Create Category SQLAlchemy model (id UUID PK, name, slug unique, parent_id self-FK nullable, position, created_at, updated_at) with indexes in `backend/app/models/category.py`
+- [x] T015 [P] Create Product SQLAlchemy model (id UUID PK, name, slug unique, description, base_price int, category_id FK, is_active, search_vector tsvector, deleted_at, created_at, updated_at) with indexes and GIN index on search_vector in `backend/app/models/product.py`
+- [x] T016 [P] Create ProductImage SQLAlchemy model (id UUID PK, product_id FK cascade, url, alt_text, position, created_at, updated_at) with indexes in `backend/app/models/product.py`
+- [x] T017 [P] Create ProductVariant SQLAlchemy model (id UUID PK, product_id FK cascade, variant_type, variant_value, sku unique, price_override nullable int, stock_quantity, created_at, updated_at) with unique constraint on (product_id, variant_type, variant_value) in `backend/app/models/product.py`
+- [x] T018 Generate Alembic migration for Category, Product, ProductImage, and ProductVariant tables including search_vector trigger in `backend/alembic/versions/`
+- [x] T019 Create cursor-based pagination utility (encode/decode opaque base64 cursors, apply WHERE/ORDER/LIMIT, return has_next_page) in `backend/app/core/pagination.py`
+- [x] T020 Create consistent error response format (`{"detail": "message", "code": "ERROR_CODE"}`) and exception handlers in `backend/app/core/errors.py`
+- [x] T021 Create Pydantic base schemas (PaginatedResponse, CursorParams, ErrorResponse) in `backend/app/schemas/common.py`
+- [x] T022 Create API client with base URL, error handling, and TypeScript types in `frontend/src/lib/api-client.ts`
+- [x] T023 Create shared TypeScript types (Product, Category, ProductImage, ProductVariant, PaginatedResponse) in `frontend/src/lib/types.ts`
+- [x] T024 Create price formatting utility (cents to display string) and other shared helpers in `frontend/src/lib/utils.ts`
+- [x] T025 Create TanStack Query provider setup in `frontend/src/App.tsx` with React Router (routes for `/products` and `/products/:slug`)
+- [x] T026 Create seed data script with sample categories (2 levels), products, images, and variants in `backend/app/scripts/seed.py`
 
 **Checkpoint**: Foundation ready — database running, models migrated, seed data available, frontend scaffolded. User story implementation can now begin.
 
