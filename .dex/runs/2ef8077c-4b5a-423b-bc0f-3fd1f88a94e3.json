@@ -8,13 +8,13 @@
   "status": "running",
   "totalCostUsd": 0,
   "totalDurationMs": null,
-  "phasesCompleted": 23,
+  "phasesCompleted": 25,
   "writerPid": 2618665,
   "description": null,
   "fullPlanPath": null,
   "maxLoopCycles": null,
   "maxBudgetUsd": null,
-  "loopsCompleted": 1,
+  "loopsCompleted": 2,
   "phases": [
     {
       "phaseTraceId": "b1aaf338-bdec-4797-9077-2c7d69f77a1d",
@@ -486,6 +486,46 @@
       "cycleNumber": 2,
       "featureSlug": "mock-c2-f-002",
       "startedAt": "2026-04-18T16:02:36.546Z",
+      "status": "completed",
+      "endedAt": "2026-04-18T16:02:36.653Z",
+      "costUsd": 0,
+      "durationMs": 107,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": "checkpoint/cycle-2-after-learnings",
+      "candidateSha": "87a8236d5b575358c87a700b467fd649a4e847a2"
+    },
+    {
+      "phaseTraceId": "35c43492-48a2-4e0a-9525-16d64c31e772",
+      "runId": "2ef8077c-4b5a-423b-bc0f-3fd1f88a94e3",
+      "specDir": null,
+      "phaseNumber": 3,
+      "phaseName": "loop:gap_analysis",
+      "stage": "gap_analysis",
+      "cycleNumber": 3,
+      "featureSlug": null,
+      "startedAt": "2026-04-18T16:02:36.675Z",
+      "status": "completed",
+      "endedAt": "2026-04-18T16:02:36.675Z",
+      "costUsd": 0,
+      "durationMs": 0,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": null,
+      "candidateSha": null
+    },
+    {
+      "phaseTraceId": "abe7b268-3f3e-4c5c-b126-6c13ecf03aa7",
+      "runId": "2ef8077c-4b5a-423b-bc0f-3fd1f88a94e3",
+      "specDir": null,
+      "phaseNumber": 3,
+      "phaseName": "loop:specify",
+      "stage": "specify",
+      "cycleNumber": 3,
+      "featureSlug": null,
+      "startedAt": "2026-04-18T16:02:36.675Z",
       "status": "running",
       "endedAt": null,
       "costUsd": 0,
@@ -499,6 +539,10 @@
   ],
   "failureCounters": {
     "specs/mock-c1-f-001": {
+      "impl": 0,
+      "replan": 0
+    },
+    "specs/mock-c2-f-002": {
       "impl": 0,
       "replan": 0
     }
