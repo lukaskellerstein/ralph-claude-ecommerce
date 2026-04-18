@@ -1,0 +1,23 @@
+# Dex per-developer / runtime state — gitignored by convention.
+# Committable files in .dex/ (feature-manifest.json, learnings.md, runs/)
+# are listed as negations below.
+.dex/*
+!.dex/feature-manifest.json
+!.dex/learnings.md
+!.dex/runs/
+
+# 009 — per-developer agent-backend selection and mock-run scripts.
+# For this example project we COMMIT them on main so the checkpoint-testing
+# setup is reproducible (see TESTING.md). Other projects consuming Dex should
+# keep these gitignored per spec 009 FR-016.
+!.dex/dex-config.json
+!.dex/mock-config.json
+
+# Build / environment noise
+node_modules/
+dist/
+build/
+*.log
+.env
+.env.*
+.DS_Store
