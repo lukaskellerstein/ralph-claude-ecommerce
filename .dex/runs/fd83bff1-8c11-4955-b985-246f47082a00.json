@@ -8,13 +8,13 @@
   "status": "running",
   "totalCostUsd": 0,
   "totalDurationMs": null,
-  "phasesCompleted": 14,
+  "phasesCompleted": 16,
   "writerPid": 2583100,
   "description": null,
   "fullPlanPath": null,
   "maxLoopCycles": null,
   "maxBudgetUsd": null,
-  "loopsCompleted": 0,
+  "loopsCompleted": 1,
   "phases": [
     {
       "phaseTraceId": "f98d127b-96e4-44dd-b388-d39278d53e91",
@@ -306,6 +306,46 @@
       "cycleNumber": 1,
       "featureSlug": "mock-c1-f-001",
       "startedAt": "2026-04-25T09:26:40.200Z",
+      "status": "completed",
+      "endedAt": "2026-04-25T09:26:40.307Z",
+      "costUsd": 0,
+      "durationMs": 107,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": "checkpoint/cycle-1-after-learnings",
+      "candidateSha": "98a21eae5d92df18bf6749c281ac2ec0ec1c08f0"
+    },
+    {
+      "phaseTraceId": "99ebe334-5d58-4a4b-b94e-185bc9cd70f0",
+      "runId": "fd83bff1-8c11-4955-b985-246f47082a00",
+      "specDir": null,
+      "phaseNumber": 2,
+      "phaseName": "loop:gap_analysis",
+      "stage": "gap_analysis",
+      "cycleNumber": 2,
+      "featureSlug": null,
+      "startedAt": "2026-04-25T09:26:40.331Z",
+      "status": "completed",
+      "endedAt": "2026-04-25T09:26:40.331Z",
+      "costUsd": 0,
+      "durationMs": 0,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": null,
+      "candidateSha": null
+    },
+    {
+      "phaseTraceId": "387ff90a-458f-4f8a-b198-34321bbf80bf",
+      "runId": "fd83bff1-8c11-4955-b985-246f47082a00",
+      "specDir": null,
+      "phaseNumber": 2,
+      "phaseName": "loop:specify",
+      "stage": "specify",
+      "cycleNumber": 2,
+      "featureSlug": null,
+      "startedAt": "2026-04-25T09:26:40.332Z",
       "status": "running",
       "endedAt": null,
       "costUsd": 0,
@@ -317,5 +357,10 @@
       "candidateSha": null
     }
   ],
-  "failureCounters": {}
+  "failureCounters": {
+    "specs/mock-c1-f-001": {
+      "impl": 0,
+      "replan": 0
+    }
+  }
 }
