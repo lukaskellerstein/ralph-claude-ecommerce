@@ -13,14 +13,14 @@
       "id": 2,
       "title": "Payments",
       "description": "Checkout flow — accept a credit card and create an order record.",
-      "status": "active",
+      "status": "completed",
       "specDir": "specs/mock-c2-f-002"
     },
     {
       "id": 3,
       "title": "Final feature",
       "description": "Third feature so mock runs produce cross-cycle checkpoint history.",
-      "status": "pending",
+      "status": "active",
       "specDir": null
     }
   ]
