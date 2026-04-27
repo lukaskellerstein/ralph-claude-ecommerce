@@ -6,14 +6,14 @@
       "id": 1,
       "title": "Authentication",
       "description": "Sign-up, log-in, log-out for end users. Session-based auth with email + password.",
-      "status": "active",
+      "status": "completed",
       "specDir": "specs/mock-c1-f-001"
     },
     {
       "id": 2,
       "title": "Payments",
       "description": "Checkout flow — accept a credit card and create an order record.",
-      "status": "pending",
+      "status": "active",
       "specDir": null
     },
     {
