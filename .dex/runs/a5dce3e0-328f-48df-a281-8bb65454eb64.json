@@ -8,13 +8,13 @@
   "status": "running",
   "totalCostUsd": 0,
   "totalDurationMs": null,
-  "taskPhasesCompleted": 14,
+  "taskPhasesCompleted": 16,
   "writerPid": 3713323,
   "description": null,
   "fullPlanPath": null,
   "maxLoopCycles": null,
   "maxBudgetUsd": null,
-  "cyclesCompleted": 0,
+  "cyclesCompleted": 1,
   "agentRuns": [
     {
       "agentRunId": "cb6f0704-892c-4aac-b2db-7656ed15f2cf",
@@ -306,6 +306,46 @@
       "cycleNumber": 1,
       "featureSlug": "mock-c1-f-001",
       "startedAt": "2026-04-27T20:05:27.410Z",
+      "status": "completed",
+      "endedAt": "2026-04-27T20:05:30.432Z",
+      "costUsd": 0,
+      "durationMs": 3022,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": "checkpoint/cycle-1-after-learnings",
+      "candidateSha": "9cdd7b6fe489a8b7db31fe0c4c9087d7ca2b09ce"
+    },
+    {
+      "agentRunId": "94bf84a0-fa83-4708-801f-d4cc2617d7b5",
+      "runId": "a5dce3e0-328f-48df-a281-8bb65454eb64",
+      "specDir": null,
+      "taskPhaseNumber": 2,
+      "taskPhaseName": "loop:gap_analysis",
+      "step": "gap_analysis",
+      "cycleNumber": 2,
+      "featureSlug": null,
+      "startedAt": "2026-04-27T20:05:30.454Z",
+      "status": "completed",
+      "endedAt": "2026-04-27T20:05:30.454Z",
+      "costUsd": 0,
+      "durationMs": 0,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": null,
+      "candidateSha": null
+    },
+    {
+      "agentRunId": "027c8c17-f6f4-439d-8b2c-fe36e5933815",
+      "runId": "a5dce3e0-328f-48df-a281-8bb65454eb64",
+      "specDir": null,
+      "taskPhaseNumber": 2,
+      "taskPhaseName": "loop:specify",
+      "step": "specify",
+      "cycleNumber": 2,
+      "featureSlug": null,
+      "startedAt": "2026-04-27T20:05:30.455Z",
       "status": "running",
       "endedAt": null,
       "costUsd": 0,
@@ -317,5 +357,10 @@
       "candidateSha": null
     }
   ],
-  "failureCounters": {}
+  "failureCounters": {
+    "specs/mock-c1-f-001": {
+      "impl": 0,
+      "replan": 0
+    }
+  }
 }
