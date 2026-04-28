@@ -8,13 +8,13 @@
   "status": "crashed",
   "totalCostUsd": 0,
   "totalDurationMs": null,
-  "taskPhasesCompleted": 31,
+  "taskPhasesCompleted": 33,
   "writerPid": 2559614,
   "description": null,
   "fullPlanPath": null,
   "maxLoopCycles": null,
   "maxBudgetUsd": null,
-  "cyclesCompleted": 1,
+  "cyclesCompleted": 2,
   "agentRuns": [
     {
       "agentRunId": "f0625d1a-a9f6-4487-a9a1-1f4f6358b7bb",
@@ -633,12 +633,56 @@
       "inputTokens": null,
       "outputTokens": null,
       "subagents": [],
+      "checkpointTag": "checkpoint/cycle-2-after-learnings",
+      "candidateSha": "0a0b8b31f49d083752056a68a37afd596c0a70c6"
+    },
+    {
+      "agentRunId": "26462590-0687-473b-88e0-52c7bab972e3",
+      "runId": "8561934e-d363-402c-85fc-fbba64b7a8a8",
+      "specDir": null,
+      "taskPhaseNumber": 3,
+      "taskPhaseName": "loop:gap_analysis",
+      "step": "gap_analysis",
+      "cycleNumber": 3,
+      "featureSlug": null,
+      "startedAt": "2026-04-28T23:50:07.774Z",
+      "status": "completed",
+      "endedAt": "2026-04-28T23:50:07.774Z",
+      "costUsd": 0,
+      "durationMs": 0,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": null,
+      "candidateSha": null
+    },
+    {
+      "agentRunId": "1a05d951-e240-43e3-91df-2736429e9dcd",
+      "runId": "8561934e-d363-402c-85fc-fbba64b7a8a8",
+      "specDir": null,
+      "taskPhaseNumber": 3,
+      "taskPhaseName": "loop:specify",
+      "step": "specify",
+      "cycleNumber": 3,
+      "featureSlug": null,
+      "startedAt": "2026-04-28T23:50:07.774Z",
+      "status": "completed",
+      "endedAt": "2026-04-28T23:50:12.781Z",
+      "costUsd": 0,
+      "durationMs": 5006,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
       "checkpointTag": null,
       "candidateSha": null
     }
   ],
   "failureCounters": {
     "specs/mock-c1-f-001": {
+      "impl": 0,
+      "replan": 0
+    },
+    "specs/mock-c2-f-002": {
       "impl": 0,
       "replan": 0
     }
