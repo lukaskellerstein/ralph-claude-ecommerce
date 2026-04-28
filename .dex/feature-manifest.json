@@ -21,7 +21,7 @@
       "title": "Final feature",
       "description": "Third feature so mock runs produce cross-cycle checkpoint history.",
       "status": "active",
-      "specDir": null
+      "specDir": "specs/mock-c3-f-003"
     }
   ]
 }
