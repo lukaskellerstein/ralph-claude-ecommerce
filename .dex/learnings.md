@@ -1,0 +1,3 @@
+- **mock**: c1 f-001 authentication implemented
+- **mock**: c2 f-002 payments implemented
+- **mock**: c3 f-003 final feature implemented
