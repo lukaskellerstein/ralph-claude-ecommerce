@@ -8,13 +8,13 @@
   "status": "running",
   "totalCostUsd": 0,
   "totalDurationMs": null,
-  "taskPhasesCompleted": 15,
+  "taskPhasesCompleted": 17,
   "writerPid": 2325755,
   "description": null,
   "fullPlanPath": null,
   "maxLoopCycles": null,
   "maxBudgetUsd": null,
-  "cyclesCompleted": 0,
+  "cyclesCompleted": 1,
   "agentRuns": [
     {
       "agentRunId": "63baef35-6944-4120-a3c5-6aa0fc2c79a8",
@@ -313,9 +313,54 @@
       "inputTokens": null,
       "outputTokens": null,
       "subagents": [],
+      "checkpointTag": "checkpoint/cycle-1-after-learnings",
+      "candidateSha": "baaf420297305e116cfc988ba1c3d5c8ec1b6ab7"
+    },
+    {
+      "agentRunId": "e0e64ee0-9645-4366-9c69-00a634de3e72",
+      "runId": "b41ecc46-5151-4635-8e9a-2183a8246641",
+      "specDir": null,
+      "taskPhaseNumber": 2,
+      "taskPhaseName": "loop:gap_analysis",
+      "step": "gap_analysis",
+      "cycleNumber": 2,
+      "featureSlug": null,
+      "startedAt": "2026-04-28T22:47:57.902Z",
+      "status": "completed",
+      "endedAt": "2026-04-28T22:47:57.902Z",
+      "costUsd": 0,
+      "durationMs": 0,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
+      "checkpointTag": null,
+      "candidateSha": null
+    },
+    {
+      "agentRunId": "6ee074d3-2ea1-4d0e-9485-0d12a2c0233f",
+      "runId": "b41ecc46-5151-4635-8e9a-2183a8246641",
+      "specDir": null,
+      "taskPhaseNumber": 2,
+      "taskPhaseName": "loop:specify",
+      "step": "specify",
+      "cycleNumber": 2,
+      "featureSlug": null,
+      "startedAt": "2026-04-28T22:47:57.902Z",
+      "status": "completed",
+      "endedAt": "2026-04-28T22:48:02.910Z",
+      "costUsd": 0,
+      "durationMs": 5007,
+      "inputTokens": null,
+      "outputTokens": null,
+      "subagents": [],
       "checkpointTag": null,
       "candidateSha": null
     }
   ],
-  "failureCounters": {}
+  "failureCounters": {
+    "specs/mock-c1-f-001": {
+      "impl": 0,
+      "replan": 0
+    }
+  }
 }
